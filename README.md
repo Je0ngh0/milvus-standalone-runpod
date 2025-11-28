@@ -188,6 +188,8 @@ RunPod에서 새 Pod 템플릿을 만들 때 다음과 같이 설정합니다.
   * **비워둠**
   * Dockerfile의 `ENTRYPOINT ["/entrypoint.sh"]` 가 내부에서 `milvus run standalone` 을 실행하므로, 별도의 시작 커맨드를 지정할 필요가 없습니다.
 
+![Pod Template](./images/pod_template.png)
+
 ### 2. 포트 설정
 
 **Expose HTTP Ports (Max 10)** 항목에 다음 포트를 등록합니다.
