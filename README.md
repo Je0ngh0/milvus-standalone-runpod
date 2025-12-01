@@ -258,17 +258,47 @@ Milvus Standalone 및 Embedded Etcd는 다음 포트를 사용합니다.
 
 | 포트  | 설명                                                                                       |
 |-------|--------------------------------------------------------------------------------------------|
-| 19530 | Milvus gRPC 포트입니다. Python / Java / Go / Node.js 등의 SDK는 기본적으로 이 포트로 접속합니다.<br>로컬 기본 주소는 `http://localhost:19530` 이며, RunPod에서는 `<runpod-host>:19530` 형식으로 사용합니다. |
+| 19530 | Milvus gRPC 포트입니다. Python / Java / Go / Node.js 등의 SDK는 기본적으로 이 포트로 접속합니다.<br>로컬 기본 주소는 `http://localhost:19530` 입니다. RunPod 환경에서는 노출된 프록시 도메인(예: `<username>-19530.proxy.runpod.net`)을 SDK의 gRPC 엔드포인트로 사용합니다. |
 | 9091  | Milvus의 **관리/모니터링용 HTTP 포트**입니다. `healthz` 엔드포인트와 WebUI가 이 포트에서 제공됩니다.<br>예: 로컬 환경에서는 `http://127.0.0.1:9091/webui/` 로 WebUI에 접근할 수 있고, `http://127.0.0.1:9091/healthz` 로 상태를 확인할 수 있습니다. |
 | 2379  | Embedded Etcd 클라이언트 포트입니다. Milvus와 동일 컨테이너 내에 embed Etcd가 설치되어 이 포트에서 서비스되며, 설정은 `embedEtcd.yaml` 에 의해 제어됩니다. |
 
 RunPod의 **Expose HTTP Ports** 에 위 세 포트(19530, 9091, 2379)를 모두 추가해 두면,  
-RunPod가 제공하는 도메인/엔드포인트를 통해 다음과 같이 접근할 수 있습니다.
+RunPod가 제공하는 SSH / Proxy 도메인을 통해 다음과 같이 접근할 수 있습니다.
 
-- SDK(gRPC): `<runpod-host>:19530`
-- WebUI: `http://<runpod-host>:9091/webui/`
-- health 체크(필요 시): `http://<runpod-host>:9091/healthz`
-- Etcd(디버깅/점검 용도): `<runpod-host>:2379`
+### RunPod에서의 SSH 및 접근 URL 규칙
+
+- **SSH 기본 포맷**
+
+```bash
+ssh <username>-<port>@ssh.runpod.io -i ~/.ssh/id_ed25519
+````
+
+- **SSH 예시**
+
+```bash
+ssh 5bgxrsaf7se21n-64411db8@ssh.runpod.io -i ~/.ssh/id_ed25519
+```
+
+- **URL 기본 포맷**
+
+```text
+SDK(gRPC):            <username>-19530.proxy.runpod.net
+Etcd(디버깅/점검 용도): <username>-2379.proxy.runpod.net
+WebUI:                https://<username>-9091.proxy.runpod.net/webui/
+health 체크(필요 시):  https://<username>-9091.proxy.runpod.net/healthz
+```
+
+- **URL 예시**
+
+```text
+SDK(gRPC):            5bgxrsaf7se21n-19530.proxy.runpod.net
+Etcd(디버깅/점검 용도): 5bgxrsaf7se21n-2379.proxy.runpod.net
+WebUI:                https://5bgxrsaf7se21n-9091.proxy.runpod.net/webui/
+health 체크(필요 시):  https://5bgxrsaf7se21n-9091.proxy.runpod.net/healthz
+```
+
+> 각 SDK(gRPC) / Etcd 클라이언트에서는 위 도메인을 엔드포인트 호스트로 사용하고,
+> 필요 시 포트/프로토콜 설정은 사용하는 클라이언트/라이브러리의 설정 방식에 맞춰 지정하면 됩니다.
 
 
 ---
